@@ -34,11 +34,6 @@ export default function HomeScreen() {
     checkCredentials();
   }, []);
 
-  if (isAlreadyHasCredentials) {
-    // Still checking credentials, show loading
-    return <Text>Loading...</Text>;
-  }
-
   if (!isLoggedIn) {
     // Not logged in, show login form
     return (

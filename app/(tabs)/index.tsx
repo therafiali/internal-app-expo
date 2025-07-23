@@ -10,7 +10,7 @@ export default function HomeScreen() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAlreadyHasCredentials, setIsAlreadyHasCredentials] = useState(false);
   const { fetchPlayers } = usePlayer();
-  const { setPlayer } = usePlayerContext();
+  const { player, setPlayer } = usePlayerContext();
 
   useEffect(() => {
     // first check in local storage if yes call the api to check if the credentials are valid
@@ -24,6 +24,10 @@ export default function HomeScreen() {
         if (isUsernamePasswordValid) {
           setIsLoggedIn(true);
           setIsAlreadyHasCredentials(false);
+          const playerDetails = await fetchPlayers(credentials.username);
+          setPlayer(
+            playerDetails && playerDetails[0] ? playerDetails[0] : null
+          );
           return;
         }
       }
@@ -53,7 +57,9 @@ export default function HomeScreen() {
   // If logged in, show main app
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Welcome!</Text>
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+        Welcome {player?.fullname?.toUpperCase()}!
+      </Text>
       <Button
         title="Logout"
         onPress={async () => {

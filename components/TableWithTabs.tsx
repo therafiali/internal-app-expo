@@ -4,22 +4,95 @@ import {
 } from "@/hooks/useRechargeRequests";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ThemedView } from "./ThemedView";
 
 const TABS = ["Pending", "Live", "Completed"] as const;
 type TabType = (typeof TABS)[number];
 
-const statusMap: Record<TabType, string> = {
-  Pending: "pending",
-  Live: "live",
-  Completed: "completed",
+const statusMap: Record<TabType, string[]> = {
+  Pending: ["0"],
+  Live: ["1", "2", "3"],
+  Completed: ["4"],
 };
+
+const statusColors: Record<string, string> = {
+  pending: "#EAB308", // yellow
+  live: "#2563EB", // blue
+  completed: "#22C55E", // green
+  Critical: "#E11D48", // red
+};
+
+function StatusBadge({ status }: { status?: string }) {
+  const color = statusColors[status?.toLowerCase?.() || "pending"] || "#E5E7EB";
+  return (
+    <View
+      style={[
+        styles.statusBadge,
+        { borderColor: color, backgroundColor: color + "22" },
+      ]}
+    >
+      {" "}
+      {/* 22 for light bg */}
+      <Text style={[styles.statusBadgeText, { color }]}>{status}</Text>
+    </View>
+  );
+}
+
+function RequestCard({
+  notif,
+  onPress,
+}: {
+  notif: RechargeRequest;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.85}
+      onPress={onPress}
+    >
+      <View style={styles.cardHeaderRow}>
+        <View style={styles.iconCol}>
+          <Text style={styles.bellIcon}>🔔</Text>
+        </View>
+        <View style={styles.cardContentCol}>
+          <Text style={styles.title}>
+            {notif.recharge_id || "Recharge Request"}
+          </Text>
+          <Text style={styles.subtitle}>
+            Platform: {notif.games?.game_name || "Unknown"}
+          </Text>
+          <Text style={styles.detail}>
+            Amount: <Text style={styles.amount}>{notif.amount}</Text>
+          </Text>
+        </View>
+        <View style={styles.cardMetaCol}>
+          <Text style={styles.time}>
+            {notif.created_at
+              ? new Date(notif.created_at).toLocaleString()
+              : ""}
+          </Text>
+          <StatusBadge status={notif.process_status} />
+          <Text style={styles.chevron}>›</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
 export default function TableWithTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("Pending");
   const router = useRouter();
-  const { data, isLoading, error } = useRechargeRequests(statusMap[activeTab]);
+  const { data, isLoading, error } = useRechargeRequests(
+    statusMap[activeTab]
+  );
 
   const handleCardPress = (notif: RechargeRequest) => {
     router.push({
@@ -52,44 +125,24 @@ export default function TableWithTabs() {
       </View>
       {/* Notification Cards */}
       <View style={styles.listWrapper}>
-        {isLoading && <Text>Loading...</Text>}
-        {error && <Text>Error: {error.message}</Text>}
-        {data && data.length === 0 && <Text>No requests found.</Text>}
+        {isLoading && (
+          <View style={styles.loadingWrapper}>
+            <ActivityIndicator size="large" color="#2563EB" />
+          </View>
+        )}
+        {error && <Text style={styles.errorText}>Error: {error.message}</Text>}
+        {data && data.length === 0 && (
+          <View style={styles.emptyStateWrapper}>
+            <Text style={styles.emptyStateText}>No requests found.</Text>
+          </View>
+        )}
         {data &&
           data.map((notif) => (
-            <TouchableOpacity
+            <RequestCard
               key={notif.id}
-              style={[
-                styles.card,
-                notif.process_status === "Critical" && styles.criticalCard,
-              ]}
-              activeOpacity={0.85}
+              notif={notif}
               onPress={() => handleCardPress(notif)}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.bellIcon}>🔔</Text>
-                <View style={styles.cardContent}>
-                  <Text style={styles.title}>
-                    {notif.recharge_id || "Recharge Request"}
-                  </Text>
-                  <Text style={styles.subtitle}>
-                    Originator: {notif.player_id}
-                  </Text>
-                </View>
-                <View style={styles.cardMeta}>
-                  <Text style={styles.time}>
-                    {notif.created_at
-                      ? new Date(notif.created_at).toLocaleString()
-                      : ""}
-                  </Text>
-                  <View style={styles.statusBadgeWrapper}>
-                    <Text style={styles.statusBadge}>
-                      {notif.process_status}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
+            />
           ))}
       </View>
     </ThemedView>
@@ -99,7 +152,7 @@ export default function TableWithTabs() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#F8FAFC",
     paddingTop: 16,
   },
   tabsRow: {
@@ -108,22 +161,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
     paddingHorizontal: 16,
+    gap: 8,
   },
   tab: {
     flex: 1,
-    paddingVertical: 8,
-    marginRight: 8,
+    paddingVertical: 10,
     borderRadius: 20,
     backgroundColor: "#F2F4F7",
     alignItems: "center",
+    marginHorizontal: 2,
+    elevation: 0,
   },
   activeTab: {
-    backgroundColor: "#1A56DB",
+    backgroundColor: "#2563EB",
+    shadowColor: "#2563EB",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
   },
   tabText: {
     color: "#222",
     fontWeight: "600",
     fontSize: 16,
+    letterSpacing: 0.2,
   },
   activeTabText: {
     color: "#fff",
@@ -131,35 +192,66 @@ const styles = StyleSheet.create({
   listWrapper: {
     flex: 1,
     width: "100%",
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
+  },
+  loadingWrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  errorText: {
+    color: "#E11D48",
+    textAlign: "center",
+    marginTop: 24,
+    fontWeight: "bold",
+  },
+  emptyStateWrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  emptyStateText: {
+    color: "#888",
+    fontSize: 16,
+    fontWeight: "500",
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 14,
+    padding: 18,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: "#E5E7EB",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 1,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+    flexDirection: "column",
   },
-  criticalCard: {
-    borderColor: "#E11D48",
-  },
-  cardHeader: {
+  cardHeaderRow: {
     flexDirection: "row",
     alignItems: "flex-start",
+    width: "100%",
+  },
+  iconCol: {
+    alignItems: "center",
+    marginRight: 10,
+    width: 32,
   },
   bellIcon: {
     fontSize: 24,
-    marginRight: 12,
+    marginBottom: 2,
+  },
+  screenshotIcon: {
+    fontSize: 18,
     marginTop: 2,
   },
-  cardContent: {
+  cardContentCol: {
     flex: 1,
+    paddingRight: 8,
   },
   title: {
     fontWeight: "bold",
@@ -168,30 +260,62 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   subtitle: {
-    color: "#666",
+    color: "#2563EB",
     fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 2,
   },
-  cardMeta: {
+  detail: {
+    color: "#444",
+    fontSize: 13,
+    marginBottom: 1,
+  },
+  amount: {
+    color: "#22C55E",
+    fontWeight: "bold",
+  },
+  notes: {
+    color: "#EAB308",
+    fontSize: 13,
+    marginTop: 2,
+    fontStyle: "italic",
+  },
+  cardMetaCol: {
     alignItems: "flex-end",
-    marginLeft: 12,
+    minWidth: 80,
+    marginLeft: 8,
   },
   time: {
     color: "#888",
-    fontSize: 13,
-    marginBottom: 6,
+    fontSize: 12,
+    marginBottom: 2,
+    textAlign: "right",
   },
-  statusBadgeWrapper: {
-    alignItems: "flex-end",
+  updatedTime: {
+    color: "#94A3B8",
+    fontSize: 11,
+    marginBottom: 4,
+    textAlign: "right",
   },
   statusBadge: {
-    color: "#E11D48",
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    marginTop: 2,
+    marginBottom: 2,
+    alignSelf: "flex-end",
+    backgroundColor: "#F2F4F7",
+  },
+  statusBadgeText: {
     fontWeight: "bold",
-    fontSize: 14,
-    borderWidth: 1,
-    borderColor: "#E11D48",
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    overflow: "hidden",
+    fontSize: 13,
+    textTransform: "capitalize",
+  },
+  chevron: {
+    fontSize: 28,
+    color: "#CBD5E1",
+    marginTop: 8,
+    marginRight: -4,
   },
 });

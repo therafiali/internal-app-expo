@@ -22,37 +22,37 @@ export function useChat() {
   const findOrCreateRoom = async (playerId: string) => {
     setLoading(true);
     setError(null);
-    
+
     // First, try to find existing room for this player
     const { data: existingRoom, error: findError } = await supabase
       .from("chat_rooms")
       .select("id")
       .eq("player_id", playerId)
       .single();
-    
+
     if (existingRoom) {
       setLoading(false);
       return existingRoom.id;
     }
-    
+
     // If no room exists, create a new one
     const { data: newRoom, error: createError } = await supabase
       .from("chat_rooms")
       .insert([
         {
           player_id: playerId,
-          type: 'direct'
-        }
+          type: "direct",
+        },
       ])
       .select("id")
       .single();
-    
+
     if (createError) {
       setError(createError.message);
       setLoading(false);
       return null;
     }
-    
+
     setLoading(false);
     return newRoom?.id || null;
   };
@@ -66,7 +66,7 @@ export function useChat() {
       .select("*")
       .eq("room_id", roomId)
       .order("created_at", { ascending: true });
-    
+
     if (error) {
       setError(error.message);
     } else {
@@ -77,7 +77,12 @@ export function useChat() {
   };
 
   // Send a new message
-  const sendMessage = async (roomId: string, senderId: string, body: string, senderType: string = 'player') => {
+  const sendMessage = async (
+    roomId: string,
+    senderId: string,
+    body: string,
+    senderType: string = "player"
+  ) => {
     setLoading(true);
     setError(null);
     const { data, error } = await supabase
@@ -87,22 +92,29 @@ export function useChat() {
           room_id: roomId,
           sender_id: senderId,
           body: body,
-          sender_type: senderType
-        }
+          sender_type: senderType,
+        },
       ])
       .select();
-    
+
     if (error) {
       setError(error.message);
     } else {
       // Add the new message to local state
       if (data && data[0]) {
-        setMessages(prev => [...prev, data[0]]);
+        setMessages((prev) => [...prev, data[0]]);
       }
     }
     setLoading(false);
     return data;
   };
 
-  return { messages, loading, error, fetchMessages, sendMessage, findOrCreateRoom };
-} 
+  return {
+    messages,
+    loading,
+    error,
+    fetchMessages,
+    sendMessage,
+    findOrCreateRoom,
+  };
+}

@@ -22,8 +22,13 @@ async function fetchRechargeRequestsByStatus(
 ): Promise<RechargeRequest[]> {
   const { data, error } = await supabase
     .from("recharge_requests")
-    .select("*")
-    .in("process_status", ["0"])
+    .select(
+      `
+      *,
+      games:game_id(game_name)
+      `
+    )
+    .in("process_status", [status])
     .order("created_at", { ascending: false });
 
   if (error) throw error;

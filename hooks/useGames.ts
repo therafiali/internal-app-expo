@@ -50,7 +50,14 @@ export function useGames() {
         game_username: game.player_platfrom_usernames?.[0]?.game_username || null
       })) || [];
       
-      setGames(formattedData);
+      // Sort games: ones with usernames first, then ones without
+      const sortedGames = formattedData.sort((a, b) => {
+        if (a.game_username && !b.game_username) return -1; // a to top
+        if (!a.game_username && b.game_username) return 1;  // b to top
+        return 0; // keep original order if both have or both don't have usernames
+      });
+      
+      setGames(sortedGames);
     }
     
     setLoading(false);

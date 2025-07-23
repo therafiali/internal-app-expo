@@ -1,11 +1,42 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import GameCard from '@/components/GameCard';
+import { useGames } from '@/hooks/useGames';
+import React, { useEffect } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function GamesScreen() {
+  const { games, loading, error, fetchGames } = useGames();
+
+  useEffect(() => {
+    // For now using a test player ID - replace with actual logged in player ID
+    const testPlayerId = "test-player-id";
+    fetchGames(testPlayerId);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Loading games...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Games</Text>
-      <Text style={styles.subtitle}>Coming soon...</Text>
+      <FlatList
+        data={games}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <GameCard game={item} />}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -13,17 +44,24 @@ export default function GamesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
+    paddingTop: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 8,
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  subtitle: {
+  loadingText: {
     fontSize: 16,
-    color: '#666',
+    textAlign: 'center',
+    marginTop: 50,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 50,
   },
 }); 

@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import TableWithTabs from "@/components/TableWithTabs";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
 export default function ActivityScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Activity</Text>
-      <Text style={styles.subtitle}>Coming soon...</Text>
+      <TableWithTabs />
     </View>
   );
 }
@@ -13,17 +13,6 @@ export default function ActivityScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-}); 
+});

@@ -2,6 +2,7 @@ import { isPlayerUsernamePasswordValid } from "@/hooks/usePlayer";
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import { logout } from "@/lib/auth";
 
 interface LoginFormProps {
   onLogin?: () => void;
@@ -50,6 +51,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Login" onPress={handleLogin} />
+     
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import * as Crypto from "expo-crypto";
+import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
-import * as SecureStore from "expo-secure-store";
 
 // Hash password using SHA-256
 const hashPassword = async (password: string) => {
@@ -15,16 +15,32 @@ export function usePlayer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [players, setPlayers] = useState<
-    { username: string; password: string }[]
+    {
+      gender?: string | null;
+      fullname?: string | null;
+      username?: string | null;
+      profilepic?: string | null;
+      team_id?: string | null;
+      id: string;
+      user_id?: string | null;
+      last_login?: string | null;
+      active_status?: string | null;
+      online_status?: string | null;
+      firstname?: string | null;
+      lastname?: string | null;
+    }[]
   >([]);
 
   // Fetch all players
-  const fetchPlayers = async () => {
+  const fetchPlayers = async (username: string) => {
     setLoading(true);
     setError(null);
     const { data, error } = await supabase
-      .from("player")
-      .select("username, password");
+      .from("players")
+      .select(
+        "gender, fullname, username, profilepic, team_id, id, user_id, last_login, active_status, online_status, firstname, lastname"
+      )
+      .eq("username", username);
     if (error) setError(error.message);
     setPlayers(data || []);
     setLoading(false);

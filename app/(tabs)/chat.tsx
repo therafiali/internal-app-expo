@@ -1,31 +1,32 @@
 import ChatInput from '@/components/ChatInput';
 import ChatMessage from '@/components/ChatMessage';
+import { usePlayerContext } from '@/context/PlayerContext';
 import { useChat } from '@/hooks/useChat';
 import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 export default function ChatScreen() {
   const { messages, loading, error, fetchMessages, sendMessage, findOrCreateRoom } = useChat();
+  const { player } = usePlayerContext();
   const [roomId, setRoomId] = useState<string | null>(null);
-  
-  // Using proper UUID format for testing - replace with actual logged in player data
-  const testPlayerId = "cdae7c5c-5897-4489-95ad-afab89d01f99";
 
   useEffect(() => {
     const initializeChat = async () => {
-      const playerRoomId = await findOrCreateRoom(testPlayerId);
-      if (playerRoomId) {
-        setRoomId(playerRoomId);
-        await fetchMessages(playerRoomId);
+      if (player?.id) {
+        const playerRoomId = await findOrCreateRoom(player.id);
+        if (playerRoomId) {
+          setRoomId(playerRoomId);
+          await fetchMessages(playerRoomId);
+        }
       }
     };
     
     initializeChat();
-  }, []);
+  }, [player?.id]);
 
   const handleSendMessage = async (messageText: string) => {
-    if (roomId) {
-      await sendMessage(roomId, testPlayerId, messageText, 'player');
+    if (roomId && player?.id) {
+      await sendMessage(roomId, player.id, messageText, 'player');
     }
   };
 
@@ -45,6 +46,20 @@ export default function ChatScreen() {
       />
     );
   };
+
+  if (!player?.id) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Support Chat</Text>
+          <Text style={styles.headerStatus}>● Offline</Text>
+        </View>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Please login to access chat</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading && (!roomId || messages.length === 0)) {
     return (

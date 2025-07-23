@@ -1,4 +1,6 @@
 import LoginForm from "@/components/LoginForm";
+import RechargeButton from "@/components/RechargeButton";
+import RedeemButton from "@/components/RedeemButton";
 import { usePlayerContext } from "@/context/PlayerContext";
 import { isPlayerUsernamePasswordValid, usePlayer } from "@/hooks/usePlayer";
 import { logout } from "@/lib/auth";
@@ -84,6 +86,10 @@ export default function HomeScreen() {
       <Text style={{ fontSize: 16, fontWeight: "500", margin: 10 }}>
         {player?.teams?.team_name || "No team"}
       </Text>
+      
+      <RechargeButton />
+      <RedeemButton />
+      
       <Button
         title="Logout"
         onPress={async () => {

@@ -1,16 +1,3 @@
-<<<<<<< Updated upstream
-import ChatInput from '@/components/ChatInput';
-import ChatMessage from '@/components/ChatMessage';
-import { usePlayerContext } from '@/context/PlayerContext';
-import { useChat } from '@/hooks/useChat';
-import React, { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
-
-export default function ChatScreen() {
-  const { messages, loading, error, fetchMessages, sendMessage, findOrCreateRoom } = useChat();
-  const { player } = usePlayerContext();
-  const [roomId, setRoomId] = useState<string | null>(null);
-=======
 import ChatInput from "@/components/ChatInput";
 import ChatMessage from "@/components/ChatMessage";
 import { useChat } from "@/hooks/useChat";
@@ -37,7 +24,6 @@ export default function ChatScreen() {
 
   // Using proper UUID format for testing - replace with actual logged in player data
   const testPlayerId = "cdae7c5c-5897-4489-95ad-afab89d01f99";
->>>>>>> Stashed changes
 
   useEffect(() => {
     const initializeChat = async () => {
@@ -63,13 +49,8 @@ export default function ChatScreen() {
   }, [roomId, fetchMessages]);
 
   const handleSendMessage = async (messageText: string) => {
-<<<<<<< Updated upstream
-    if (roomId && player?.id) {
-      await sendMessage(roomId, player.id, messageText, 'player');
-=======
     if (roomId) {
       await sendMessage(roomId, testPlayerId, messageText, "player");
->>>>>>> Stashed changes
     }
   };
 

@@ -28,6 +28,9 @@ export function usePlayer() {
       online_status?: string | null;
       firstname?: string | null;
       lastname?: string | null;
+      teams?: {
+        team_name?: string | null;
+      }[];
     }[]
   >([]);
 
@@ -38,7 +41,9 @@ export function usePlayer() {
     const { data, error } = await supabase
       .from("players")
       .select(
-        "gender, fullname, username, profilepic, team_id, id, user_id, last_login, active_status, online_status, firstname, lastname"
+        `gender, fullname, username, profilepic, team_id, id, user_id, last_login, active_status, online_status, firstname, lastname,
+        teams:team_id(team_name)
+        `
       )
       .eq("username", username);
     if (error) setError(error.message);

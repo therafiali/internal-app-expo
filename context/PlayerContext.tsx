@@ -13,6 +13,9 @@ export interface Player {
   online_status?: string | null;
   firstname?: string | null;
   lastname?: string | null;
+  teams?: {
+    team_name?: string | null;
+  }[];
 }
 
 interface PlayerContextType {

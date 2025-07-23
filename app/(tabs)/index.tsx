@@ -54,11 +54,15 @@ export default function HomeScreen() {
     );
   }
 
+  console.log(player, "player");
   // If logged in, show main app
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text style={{ fontSize: 24, fontWeight: "bold" }}>
         Welcome {player?.fullname?.toUpperCase()}!
+      </Text>
+      <Text style={{ fontSize: 16, fontWeight: "500", margin: 10 }}>
+        {player?.teams?.team_name}
       </Text>
       <Button
         title="Logout"

@@ -1,8 +1,7 @@
 import { isPlayerUsernamePasswordValid } from "@/hooks/usePlayer";
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import * as SecureStore from "expo-secure-store";
-import { logout } from "@/lib/auth";
+import { setItem } from "../lib/storage";
 
 interface LoginFormProps {
   onLogin?: () => void;
@@ -14,13 +13,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    await SecureStore.setItemAsync("username", username);
-    await SecureStore.setItemAsync("password", password);
-
     if (!username || !password) {
       setError("Please enter both username and password.");
       return;
     }
+
+    await setItem("username", username);
+    await setItem("password", password);
 
     const isValid = await isPlayerUsernamePasswordValid(username, password);
     if (!isValid) {
@@ -51,7 +50,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Login" onPress={handleLogin} />
-     
     </View>
   );
 };

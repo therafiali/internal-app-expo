@@ -1,17 +1,8 @@
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
+import { getItem, setItem } from "./storage";
 
 export const getCredientials = async () => {
-  if (Platform.OS === "web") {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-    if (!username || !password) {
-      throw new Error("Username or password is not set");
-    }
-    return { username, password };
-  }
-  const username = await SecureStore.getItemAsync("username");
-  const password = await SecureStore.getItemAsync("password");
+  const username = await getItem("username");
+  const password = await getItem("password");
   if (!username || !password) {
     throw new Error("Username or password is not set");
   }
@@ -19,13 +10,8 @@ export const getCredientials = async () => {
 };
 
 export const setCredientials = async (username: string, password: string) => {
-  if (Platform.OS === "web") {
-    localStorage.setItem("username", username);
-    localStorage.setItem("password", password);
-    return;
-  }
-  await SecureStore.setItemAsync("username", username);
-  await SecureStore.setItemAsync("password", password);
+  await setItem("username", username);
+  await setItem("password", password);
 
   if (!username || !password) {
     throw new Error("Username or password is not set");

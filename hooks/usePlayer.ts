@@ -1,6 +1,6 @@
 import * as Crypto from "expo-crypto";
-import * as SecureStore from "expo-secure-store";
 import { useState } from "react";
+import { getItem } from "../lib/storage";
 import { supabase } from "../lib/supabase";
 
 // Hash password using SHA-256
@@ -73,8 +73,8 @@ export const isPlayerUsernamePasswordValid = async (
   username: string,
   password: string
 ) => {
-  const storedUsername = await SecureStore.getItemAsync("username");
-  const storedPassword = await SecureStore.getItemAsync("password");
+  const storedUsername = await getItem("username");
+  const storedPassword = await getItem("password");
   const { data, error } = await supabase
     .from("players")
     .select("username, password, fullname")

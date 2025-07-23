@@ -7,9 +7,8 @@ export default function GamesScreen() {
   const { games, loading, error, fetchGames } = useGames();
 
   useEffect(() => {
-    // For now using a test player ID - replace with actual logged in player ID
-    const testPlayerId = "test-player-id";
-    fetchGames(testPlayerId);
+    // Fetch games without player ID for now
+    fetchGames();
   }, []);
 
   if (loading) {

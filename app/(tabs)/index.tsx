@@ -1,12 +1,8 @@
-import LoginForm from "@/components/LoginForm";
-import { usePlayerContext } from "@/context/PlayerContext";
-import { isPlayerUsernamePasswordValid, usePlayer } from "@/hooks/usePlayer";
-import { logout } from "@/lib/auth";
-import { getCredientials } from "@/lib/credentials";
-import React, { useEffect, useState } from "react";
-import { Button, Text, View } from "react-native";
+import React from "react";
+import { Text, View } from "react-native";
 
 export default function HomeScreen() {
+<<<<<<< Updated upstream
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAlreadyHasCredentials, setIsAlreadyHasCredentials] = useState(false);
   const { fetchPlayers } = usePlayer();
@@ -70,6 +66,11 @@ export default function HomeScreen() {
           await logout(setPlayer, setIsLoggedIn);
         }}
       />
+=======
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Welcome Home!</Text>
+>>>>>>> Stashed changes
     </View>
   );
 }

@@ -15,7 +15,7 @@ export interface Player {
   lastname?: string | null;
   teams?: {
     team_name?: string | null;
-  }[];
+  };
 }
 
 interface PlayerContextType {

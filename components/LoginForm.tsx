@@ -65,7 +65,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 2,
-    margin: 20,
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 100,
   },
   label: {
     fontWeight: "bold",

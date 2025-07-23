@@ -3,14 +3,15 @@ import { usePlayerContext } from "@/context/PlayerContext";
 import { isPlayerUsernamePasswordValid, usePlayer } from "@/hooks/usePlayer";
 import { logout } from "@/lib/auth";
 import { getCredientials } from "@/lib/credentials";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Button, Text, View } from "react-native";
 
 export default function HomeScreen() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAlreadyHasCredentials, setIsAlreadyHasCredentials] = useState(false);
   const { fetchPlayers } = usePlayer();
   const { player, setPlayer } = usePlayerContext();
+  const navigation = useNavigation();
 
   useEffect(() => {
     // first check in local storage if yes call the api to check if the credentials are valid
@@ -21,22 +22,35 @@ export default function HomeScreen() {
           credentials.username,
           credentials.password
         );
+        console.log(isUsernamePasswordValid, "isUsernamePasswordValid");
         if (isUsernamePasswordValid) {
           setIsLoggedIn(true);
-          setIsAlreadyHasCredentials(false);
           const playerDetails = await fetchPlayers(credentials.username);
-          setPlayer(
-            playerDetails && playerDetails[0] ? playerDetails[0] : null
-          );
+          let playerObj = null;
+          if (playerDetails && playerDetails[0]) {
+            const { teams, ...rest } = playerDetails[0];
+            playerObj = {
+              ...rest,
+              teams: Array.isArray(teams) ? teams[0] : teams,
+            };
+          }
+          setPlayer(playerObj);
           return;
         }
       }
-      setIsAlreadyHasCredentials(false);
       setPlayer(null); // Allow null in context for logout
       setIsLoggedIn(false);
     }
     checkCredentials();
   }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigation.setOptions({ tabBarStyle: { display: "none" } });
+    } else {
+      navigation.setOptions({ tabBarStyle: { display: "flex" } });
+    }
+  }, [isLoggedIn, navigation]);
 
   if (!isLoggedIn) {
     // Not logged in, show login form
@@ -45,9 +59,15 @@ export default function HomeScreen() {
         onLogin={async () => {
           const credentials = await getCredientials();
           const playerDetails = await fetchPlayers(credentials.username);
-          setPlayer(
-            playerDetails && playerDetails[0] ? playerDetails[0] : null
-          );
+          let playerObj = null;
+          if (playerDetails && playerDetails[0]) {
+            const { teams, ...rest } = playerDetails[0];
+            playerObj = {
+              ...rest,
+              teams: Array.isArray(teams) ? teams[0] : teams,
+            };
+          }
+          setPlayer(playerObj);
           setIsLoggedIn(true);
         }}
       />
@@ -62,7 +82,7 @@ export default function HomeScreen() {
         Welcome {player?.fullname?.toUpperCase()}!
       </Text>
       <Text style={{ fontSize: 16, fontWeight: "500", margin: 10 }}>
-        {player?.teams?.team_name}
+        {player?.teams?.team_name || "No team"}
       </Text>
       <Button
         title="Logout"

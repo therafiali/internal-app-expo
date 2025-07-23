@@ -1,6 +1,7 @@
 import ChatInput from "@/components/ChatInput";
 import ChatMessage from "@/components/ChatMessage";
 import { useChat } from "@/hooks/useChat";
+import { usePlayerContext } from "@/context/PlayerContext";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -23,8 +24,7 @@ export default function ChatScreen() {
   const [roomId, setRoomId] = useState<string | null>(null);
 
   // Using proper UUID format for testing - replace with actual logged in player data
-  const testPlayerId = "cdae7c5c-5897-4489-95ad-afab89d01f99";
-
+    const { player } = usePlayerContext();
   useEffect(() => {
     const initializeChat = async () => {
       if (player?.id) {

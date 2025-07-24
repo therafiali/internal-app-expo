@@ -22,7 +22,7 @@ export function usePlayer() {
       profilepic?: string | null;
       team_id?: string | null;
       id: string;
-      user_id?: string | null;
+
       last_login?: string | null;
       active_status?: string | null;
       online_status?: string | null;
@@ -41,7 +41,7 @@ export function usePlayer() {
     const { data, error } = await supabase
       .from("players")
       .select(
-        `gender, fullname, username, profilepic, team_id, id, user_id, last_login, active_status, online_status, firstname, lastname,
+        `gender, fullname, username, profilepic, team_id, id,last_login, active_status, online_status, firstname, lastname,
         teams:team_id(team_name)
         `
       )

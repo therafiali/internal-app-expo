@@ -40,17 +40,17 @@ export default function ChatScreen() {
   }, [player?.id]);
 
   // Poll for new messages every 2 seconds when roomId is set
-  useEffect(() => {
-    if (!roomId) return;
-    const interval = setInterval(() => {
-      fetchMessages(roomId);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [roomId, fetchMessages]);
+  // useEffect(() => {
+  //   if (!roomId) return;
+  //   const interval = setInterval(() => {
+  //     fetchMessages(roomId);
+  //   }, 2000);
+  //   return () => clearInterval(interval);
+  // }, [roomId, fetchMessages]);
 
   const handleSendMessage = async (messageText: string) => {
     if (roomId) {
-      await sendMessage(roomId, testPlayerId, messageText, "player");
+      await sendMessage(roomId, player?.id, messageText, "player");
     }
   };
 

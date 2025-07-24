@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface RedeemRequest {
   id: string;
-  redeem_id?: string;
   player_id: string;
   team_id: string;
   game_id: string;
@@ -11,7 +10,9 @@ export interface RedeemRequest {
   process_status: string;
   created_at?: string;
   updated_at?: string;
-  // ...add other fields as needed
+  games?: {
+    game_name: string;
+  };
 }
 
 async function fetchRedeemRequestsByStatus(
@@ -19,8 +20,13 @@ async function fetchRedeemRequestsByStatus(
 ): Promise<RedeemRequest[]> {
   const { data, error } = await supabase
     .from("redeem_requests")
-    .select("*")
-    .in("process_status", ['0'])
+    .select(
+      `
+      *,
+      games:game_id(game_name)
+      `
+    )
+    .in("process_status", status)
     .order("created_at", { ascending: false });
 
   if (error) throw error;

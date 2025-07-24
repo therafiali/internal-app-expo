@@ -1,15 +1,20 @@
 import GameCard from '@/components/GameCard';
 import { useGames } from '@/hooks/useGames';
+import { usePlayerContext } from '@/context/PlayerContext';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function GamesScreen() {
   const { games, loading, error, fetchGames } = useGames();
+  const { player } = usePlayerContext();
 
   useEffect(() => {
-    // Fetch games without player ID for now
+    if (player?.id) {
+      fetchGames(player.id);
+    } else {
     fetchGames();
-  }, []);
+    }
+  }, [player]);
 
   if (loading) {
     return (

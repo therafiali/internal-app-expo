@@ -1,6 +1,7 @@
 import TableWithTabs from "@/components/TableWithTabs";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useGames } from "@/hooks/useGames";
 
 export default function ActivityScreen() {
   return (

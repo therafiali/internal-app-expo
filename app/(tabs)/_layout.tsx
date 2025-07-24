@@ -54,6 +54,12 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <MaterialIcons size={28} name="notifications" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="redeem-flow"
+        options={{
+          href: null, // Hide from tab bar
+        }}
+      />
     </Tabs>
   );
 }

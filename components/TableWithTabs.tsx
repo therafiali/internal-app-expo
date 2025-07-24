@@ -1,7 +1,7 @@
 import {
-  RechargeRequest,
-  useRechargeRequests,
-} from "@/hooks/useRechargeRequests";
+  RedeemRequest,
+  useRedeemRequests,
+} from "@/hooks/useRedeemRequests";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -49,7 +49,7 @@ function RequestCard({
   notif,
   onPress,
 }: {
-  notif: RechargeRequest;
+  notif: RedeemRequest;
   onPress: () => void;
 }) {
   return (
@@ -60,17 +60,17 @@ function RequestCard({
     >
       <View style={styles.cardHeaderRow}>
         <View style={styles.iconCol}>
-          <Text style={styles.bellIcon}>🔔</Text>
+          <Text style={styles.bellIcon}>💰</Text>
         </View>
         <View style={styles.cardContentCol}>
           <Text style={styles.title}>
-            {notif.recharge_id || "Recharge Request"}
+            Redeem Request
           </Text>
           <Text style={styles.subtitle}>
             Platform: {notif.games?.game_name || "Unknown"}
           </Text>
           <Text style={styles.detail}>
-            Amount: <Text style={styles.amount}>{notif.amount}</Text>
+            Amount: <Text style={styles.amount}>${notif.total_amount}</Text>
           </Text>
         </View>
         <View style={styles.cardMetaCol}>
@@ -90,11 +90,11 @@ function RequestCard({
 export default function TableWithTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("Pending");
   const router = useRouter();
-  const { data, isLoading, error } = useRechargeRequests(
+  const { data, isLoading, error } = useRedeemRequests(
     statusMap[activeTab]
   );
 
-  const handleCardPress = (notif: RechargeRequest) => {
+  const handleCardPress = (notif: RedeemRequest) => {
     router.push({
       pathname: "/request-detail",
       params: { request: JSON.stringify(notif) },
